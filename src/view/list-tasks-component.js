@@ -1,26 +1,22 @@
-import {createElement} from '../framework/render.js';
+/* import {createElement} from '../framework/render.js';
 
 
-function createAddTaskComponentTemplate() {
+function createListTaskComponentTemplate() {
     return (
         `
-        <div class="task-column backlog">
-        <h3>Название блока</h3>
-        <ul>
-            <li>Название первой задачи</li>
-            <li>Название первой задачи</li>
-            <li>Название первой задачи</li>
-        </ul>
+        <div class="task-column">
+        <h3></h3>
+        
       </div>`
       );
 
 }
 
 
-export default class taskBacklogComponent {
+export default class TasksListComponent {
   
   getTemplate() {
-    return createAddTaskComponentTemplate();
+    return createListTaskComponentTemplate();
   }
 
 
@@ -38,4 +34,39 @@ export default class taskBacklogComponent {
     this.element = null;
   }
   
+}
+ */
+
+import {createElement} from '../framework/render.js';
+
+function createListTaskComponentTemplate({title, status}) { 
+  return (
+    `<div class="task-column ${status}">
+      <h3>${title.toUpperCase()}</h3>
+    </div>`
+  );
+}
+
+export default class TasksListComponent {
+  
+  constructor({status}) {
+    this.status = status;
+  }
+
+  getTemplate() {
+    
+    return createListTaskComponentTemplate(this.status);
+  }
+
+  getElement() {
+    if (!this.element) {
+      this.element = createElement(this.getTemplate());
+    }
+
+    return this.element;
+  }
+
+  removeElement() {
+    this.element = null;
+  }
 }

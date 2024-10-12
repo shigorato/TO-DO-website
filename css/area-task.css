@@ -1,17 +1,21 @@
-/* task-board.css */
+
 
 /* Секция с задачами */
 .task-board {
-    display: flex;
-    justify-content: space-around;
-    padding: 20px;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    gap:20px;
 }
 
+
+
 .task-column {
+    margin-bottom: 30px;
     background-color: white;
+    flex: 1 1 23%; 
     padding: 20px;
     border-radius: 8px;
-    width: 20%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -26,8 +30,29 @@
     padding: 0;
 }
 
+.taskboard__item {
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+}
+
+.task__edit {
+    display:flex;
+    min-width:35px;
+    flex-shrink:1;
+    width:auto;
+    flex-shrink:0;
+    border:none; 
+}
+
+.task__edit:hover {
+    opacity: 0.7;
+    transition-duration:0.9s;
+}
+
 /* Стили для разных колонок */
 .backlog h3 {
+
     background-color: #ccc;
     padding: 5px;
     border-radius: 4px;
@@ -54,3 +79,20 @@
     border-radius: 4px;
     color: #333;
 }
+
+
+
+
+@media (max-width:760px) {
+    .task-column {
+        flex:1 1 100%;
+    }
+    .task__edit {
+        width:8%;
+        padding:5px 5px;
+        flex-shrink:0;
+        border:none; 
+    }
+}
+
+
