@@ -1,6 +1,7 @@
 import TasksListComponent from '../src/view/list-tasks-component.js'
 import TaskComponent from '../src/view/task-component.js';
 import ConstElements from '../src/const.js';
+import TrashBtnClear from '../src/view/trash-clear-component.js'
 import { render } from '../src/framework/render.js';
 
 
@@ -21,16 +22,26 @@ import { render } from '../src/framework/render.js';
       
         const tasksFiltred = boardTasks.filter(task => task.status === status.status
         )
-        
+        console.log(tasksFiltred);
               tasksFiltred.forEach((task) =>{
-                const taskComponent = new TaskComponent({task});
+                 
+                 const taskComponent = new TaskComponent({task});
+                        
                 render(taskComponent, tasksListComponent.getElement());
+            
               });
+
+            const trashBtnClear = new TrashBtnClear();
+              if(status.status === 'trash'){
+                render(trashBtnClear, tasksListComponent.getElement());
+                
+             } 
       });
 
     }
   }
 
+ 
 
 
   /* export default class TasksBoardPresenter {
