@@ -16,22 +16,22 @@ export const tasks = [
     },
     {
         'id':'4',
-        'title':'Найти баг',
+        
         'status':'in-progress'
     },
     {
         'id':'5',
-        'title':'Сделать фичу',
+        
         'status':'in-progress'
     },
     {
         'id':'6',
-        'title':'Глянуть сериал',
+        'title':'Выучить Js',
         'status':'done'
     },
     {
         'id':'7',
-        'title':'Выполните таски',
+        'title':'Найти баг',
         'status':'done'
     },
     {

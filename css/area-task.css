@@ -80,6 +80,14 @@
     color: #333;
 }
 
+.stub p{
+    background-color:#dfdfdf;
+    border:1px solid #919191;
+    border-radius:10px;
+    padding: 8px;
+}
+
+
 
 
 
