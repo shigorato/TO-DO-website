@@ -1,150 +1,91 @@
 import TasksListComponent from '../src/view/list-tasks-component.js';
-import TaskComponent from '../src/view/task-component.js';
+import TaskAddFormComponent from '../src/view/form-add-task-component.js';
 import ConstElements from '../src/const.js';
-import TrashBtnClear from '../src/view/trash-clear-component.js';
+import TrashBtnClear from '../src/view/reset-button-component.js';
 import StubComponent from '../src/view/stub-component.js';
+import TaskPresenter from './task-presenter.js';
 import { render } from '../src/framework/render.js';
 
 export default class TasksBoardPresenter {
-
-  #taskModel;
+  #tasksModel;
   #boardContainer;
-  #boardTasks;
+  #formContainer;
+  #taskAddFormComponent;
+  #trashClearComponent;
 
-  constructor({ taskModel, boardContainer }) {
-    this.#taskModel = taskModel;
+  constructor({ taskModel, boardContainer, formContainer }) {
+    this.#tasksModel = taskModel;
     this.#boardContainer = boardContainer;
+    this.#formContainer = formContainer;
+    this.#taskAddFormComponent = new TaskAddFormComponent({
+      onClick: this.#handleAddTask.bind(this),
+    });
+    this.#trashClearComponent = new TrashBtnClear({
+      onClick: this.#handleClearTrash.bind(this),
+    });
+    this.#tasksModel.addObserver(this.#handleModelChange.bind(this));
   }
 
   init() {
+    this.#renderTaskForm();
     this.#renderBoard();
   }
 
+  #renderTaskForm() {
+    render(this.#taskAddFormComponent, this.#formContainer);
+  }
+
+  #handleAddTask(title) {
+    if (title) { // Проверяем, что название не пустое
+      
+      this.#tasksModel.addTask(title);
+    }
+  }
+  
   #renderBoard() {
-    // Получаем все задачи из модели
-    this.#boardTasks = [...this.#taskModel.tasks];
-    console.log('Все задачи:', this.#boardTasks); // Лог всех задач
-
-    // Проходим по каждому статусу и рендерим список задач для него
+    this.#clearBoard();
     ConstElements.forEach((status) => {
-      const tasksListComponent = new TasksListComponent({ status });
-      render(tasksListComponent, this.#boardContainer);
-
-      // Фильтруем задачи по статусу
-      const tasksFiltered = this.#boardTasks.filter(task => task.status === status.status);
-      console.log(`Задачи для статуса ${status.status}:`, tasksFiltered); // Лог задач для конкретного статуса
-
-      // Если задач нет или они без title, рендерим заглушку
-      if (tasksFiltered.length === 0 || tasksFiltered.every(task => !task.title)) {
-        console.log(`Отображение заглушки для статуса ${status.status}`); // Лог для заглушки
-        const stubComponent = new StubComponent(null);
-        render(stubComponent, tasksListComponent.element);
-      } else {
-        // Иначе рендерим задачи
-        tasksFiltered.forEach((task) => {
-          if (task.title) {
-               console.log(`Рендер задачи ${task.id} с title ${task.title}`);
-               this.#renderTask(task, tasksListComponent);
-           }
-        });
-      }
-
-      // Рендерим кнопку очистки для корзины
-      if (status.status === 'trash') {
-        console.log('Рендер кнопки очистки для корзины');
-        const trashBtnClear = new TrashBtnClear();
-        render(trashBtnClear, tasksListComponent.element);
-      }
+      this.#renderTasksList(status);
     });
   }
 
-  #renderTask(task, container) {
-    console.log(`Рендеринг задачи ${task.id} в контейнере ${container}`);
-    const taskComponent = new TaskComponent({ task });
-    render(taskComponent, container.element);
+  #renderTasksList(status) {
+    const tasksListComponent = new TasksListComponent({ status });
+    render(tasksListComponent, this.#boardContainer);
+
+    const tasksFiltered = this.#tasksModel.tasks.filter((task) => task.status === status.status);
+    
+    if (tasksFiltered.length === 0 || tasksFiltered.every(task => !task.title)) {
+      const stubComponent = new StubComponent(null);
+      render(stubComponent, tasksListComponent.element);
+    } else {
+      tasksFiltered.forEach((task) => {
+        if (task.title) {
+          const taskPresenter = new TaskPresenter({ task, container: tasksListComponent.element });
+          taskPresenter.init();
+        }
+      });
+    }
+
+    if (status.status === 'trash' ) {
+      render(this.#trashClearComponent, tasksListComponent.element); 
+    }
+    
   }
-}
 
 
-  /*   import TasksListComponent from '../src/view/list-tasks-component.js';
-    import TaskComponent from '../src/view/task-component.js';
-    import ConstElements from '../src/const.js';
-    import TrashBtnClear from '../src/view/trash-clear-component.js';
-    import StubComponent from '../src/view/stub-component.js';
-    import { render } from '../src/framework/render.js';
-    
-    export default class TasksBoardPresenter {
-    
-      #taskModel;
-      #boardContainer;
-      #boardTasks;
-    
-      constructor({ taskModel, boardContainer }) {
-        this.#taskModel = taskModel;
-        this.#boardContainer = boardContainer;
-      }
-    
-      init() {
-        this.#renderBoard();
-      }
-    
-      #renderBoard() {
-        // Получаем все задачи из модели
-        this.#boardTasks = [...this.#taskModel.tasks];
-        console.log('Все задачи:', this.#boardTasks); // Лог всех задач
-    
-        // Проходим по каждому статусу и рендерим список задач для него
-        ConstElements.forEach((status) => {
-          const tasksListComponent = new TasksListComponent({ status });
-          render(tasksListComponent, this.#boardContainer);
-    
-          // Фильтруем задачи по статусу
-          const tasksFiltered = this.#boardTasks.filter(task => task.status === status.status);
-          console.log(`Задачи для статуса ${status.status}:`, tasksFiltered); // Лог задач для конкретного статуса
-          console.log(`Условие заглушки ${tasksFiltered.length === 0 || tasksFiltered.every(task => !task.title)}`)
-          // Если задач нет, или они без title, рендерим заглушку
-          if (tasksFiltered.length === 0 || tasksFiltered.every(task => !task.title)) {
-            console.log(`Отображение заглушки для статуса ${status.status}`); // Лог для заглушки
-            const stubComponent = new StubComponent(null);
-            render(stubComponent.element, tasksListComponent.element);
-          } else {
-            // Иначе рендерим задачи
-            tasksFiltered.forEach((task) => {
-              if (tasksFiltred.every(task => !task.title)) {
-                const stubComponent = new StubComponent(null);
-                console.log(`Отображение заглушки для статуса ${status.status}`);
-                render(stubComponent, tasksListComponent.element);
-              } else {
-                // Если title есть, рендерим задачу
-                console.log(`Рендер задачи ${task.id} с title ${task.title}`);
-                this.#renderTask(task, tasksListComponent);
-              }
-            });
-          }
-    
-          // Рендерим кнопку очистки для корзины
-          if (status.status === 'trash') {
-            console.log('Рендер кнопки очистки для корзины');
-            const trashBtnClear = new TrashBtnClear();
-            render(trashBtnClear, tasksListComponent.element);
-          }
-        });
-      }
-    
-      #renderTask(task, container) {
-        console.log(`Рендеринг задачи ${task.id} в контейнере ${container}`);
-        const taskComponent = new TaskComponent({ task });
-        render(taskComponent, container.element); 
-      }
-    }*/
-    
-
-
-
-    
+  #handleClearTrash() {
+    this.#tasksModel.clearTrash('trash');
+    this.#renderBoard();
+    this.#trashClearComponent.disabled();
+  }
   
 
- 
+  #handleModelChange() {
+    this.#renderBoard();
+  }
 
-
- 
+  #clearBoard() {
+    this.#boardContainer.innerHTML = '';
+  }
+}

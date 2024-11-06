@@ -1,46 +1,48 @@
+import { generateUniqueId } from '../model/utils.js';
+
 export const tasks = [
     {
-        'id':'1',
+        'id':generateUniqueId(),
         'title':'Выучить Js',
         'status':'backlog'
     },
     {
-        'id':'2',
+        'id':generateUniqueId(),
         'title':'Найти утку',
         'status':'backlog'
     },
     {
-        'id':'3',
+        'id':generateUniqueId(),
         'title':'Основы React?',
         'status':'backlog'
     },
     {
-        'id':'4',
+        'id':generateUniqueId(),
         
         'status':'in-progress'
     },
     {
-        'id':'5',
+        'id':generateUniqueId(),
         
         'status':'in-progress'
     },
     {
-        'id':'6',
+        'id':generateUniqueId(),
         'title':'Выучить Js',
         'status':'done'
     },
     {
-        'id':'7',
+        'id':generateUniqueId(),
         'title':'Найти баг',
         'status':'done'
     },
     {
-        'id':'8',
+        'id':generateUniqueId(),
         'title':'Поспать',
         'status':'trash'
     },
     {
-        'id':'9',
+        'id':generateUniqueId(),
         'title':'Выпить энергетик',
         'status':'trash'
     },
