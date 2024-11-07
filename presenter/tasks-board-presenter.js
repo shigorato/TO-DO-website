@@ -50,7 +50,9 @@ export default class TasksBoardPresenter {
   }
 
   #renderTasksList(status) {
-    const tasksListComponent = new TasksListComponent({ status });
+    const tasksListComponent = new TasksListComponent({ status, 
+      onTaskDrop: this.#handleTaskDrop.bind(this)
+     });
     render(tasksListComponent, this.#boardContainer);
 
     const tasksFiltered = this.#tasksModel.tasks.filter((task) => task.status === status.status);
@@ -80,6 +82,9 @@ export default class TasksBoardPresenter {
     this.#trashClearComponent.disabled();
   }
   
+  #handleTaskDrop(taskId, newStatus){
+    this.#tasksModel.updateTaskStatus(taskId, newStatus);
+  }
 
   #handleModelChange() {
     this.#renderBoard();

@@ -17,10 +17,23 @@ export default class TaskComponent extends AbstractComponent { // Исправл
   constructor({ task }) {
     super();
     this.task = task;
+    this.#afterCreateElement();
   }
 
   get template() {
     return createTaskComponentTemplate(this.task); // Передаем task в функцию шаблона
+  }
+
+  #afterCreateElement(){
+    this.#makeTaskDraggable();
+  }
+
+  #makeTaskDraggable() {
+    this.element.setAttribute('draggable', true);
+
+    this.element.addEventListener('dragstart', (event)=>{
+      event.dataTransfer.setData('text/plain', this.task.id)
+    })
   }
 
 

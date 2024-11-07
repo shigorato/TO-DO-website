@@ -10,15 +10,30 @@ function createListTaskComponentTemplate({title, status}) {
 
 export default class TasksListComponent extends AbstractComponent {
   
-  constructor({status}) {
+  constructor({status, onTaskDrop}) {
     super();
     this.status = status;
+    this.#setDropHandler(onTaskDrop);
   }
 
   get template() {
     
     return createListTaskComponentTemplate(this.status);
   }
- 
+
+  #setDropHandler(onTaskDrop){
+    const container = this.element;
+
+    container.addEventListener('dragover',(event)=>{
+      event.preventDefault();
+    });
+  
+
+    container.addEventListener('drop',(event)=>{
+      event.preventDefault();
+      const taskId = event.dataTransfer.getData('text/plain');
+      onTaskDrop(taskId, this.status.status);
+    })
+}
   
 }
