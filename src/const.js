@@ -1,8 +1,24 @@
-const statuses = [
+export const statuses = [
   {status: 'backlog', title: 'Бэклог'},
   {status: 'in-progress', title: 'В процессе'},
   {status: 'done', title: 'Готово'},
   {status: 'trash', title: 'Корзина'}
 ];
 
-export default statuses
+export const UserAction = {
+  UPDATE_TASK:'UPDATE_TASK',
+  ADD_TASK:'ADD_TASK',
+  DELETE_TASK:'DELETE_TASK',
+}
+
+export const UpdateType = {
+  PATCH:'PATCH',
+  MINOR:'MINOR',
+  MAJOR:'MAJOR',
+  INIT:'INIT',
+}
+
+
+
+
+

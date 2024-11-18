@@ -11,6 +11,7 @@ export default class cleartrashBtnComponent  extends AbstractComponent{
   constructor({onClick}) {
     super();
     this.#handleClick = onClick || (() => {});
+    this.onClick = onClick;
     this.element.addEventListener('click', this.#clickHandler.bind(this));
   }
 
@@ -24,19 +25,10 @@ export default class cleartrashBtnComponent  extends AbstractComponent{
     this.#handleClick();
   }
 
-  disabled(){
-    this.element.disabled = true;
-    this.setClearButton();
+  toggleDisabled(isDisabled) {
+    this.element.disabled = isDisabled;
   }
 
-  enable() {
-    this.element.disabled = false;
-    this.resetClearButton();
-  }
-
-  setClearButton(){
-    this.element.style.pointerEvents = 'none'; 
-  }
 
   resetClearButton() {
     this.element.background = '';

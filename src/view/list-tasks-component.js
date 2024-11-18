@@ -23,7 +23,6 @@ export default class TasksListComponent extends AbstractComponent {
 
   #setDropHandler(onTaskDrop){
     const container = this.element;
-
     container.addEventListener('dragover',(event)=>{
       event.preventDefault();
     });

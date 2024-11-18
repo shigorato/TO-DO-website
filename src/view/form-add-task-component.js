@@ -25,8 +25,6 @@ export default class FormAddTaskComponent extends AbstractComponent {
 
   #clickHandler(evt) {
     evt.preventDefault();
-    const input = this.element.querySelector('#add-task');
-    this.#handleClick(input.value);
-    input.value = ''; // Очищает поле ввода
+    this.#handleClick();
   }
 }

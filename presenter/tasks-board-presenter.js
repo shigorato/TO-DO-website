@@ -1,63 +1,106 @@
 import TasksListComponent from '../src/view/list-tasks-component.js';
-import TaskAddFormComponent from '../src/view/form-add-task-component.js';
-import ConstElements from '../src/const.js';
-import TrashBtnClear from '../src/view/reset-button-component.js';
+import { statuses, UserAction, UpdateType } from '../src/const.js';
+import ResetClearComponent from '../src/view/reset-button-component.js';
+import LoadingViewComponent from '../src/view/loading-view-component.js';
 import StubComponent from '../src/view/stub-component.js';
 import TaskPresenter from './task-presenter.js';
-import { render } from '../src/framework/render.js';
+import { render, RenderPosition } from '../src/framework/render.js';
 
 export default class TasksBoardPresenter {
   #tasksModel;
   #boardContainer;
-  #formContainer;
-  #taskAddFormComponent;
-  #trashClearComponent;
+  #resetClearComponent;
+  #loadingViewComponent = null;
 
-  constructor({ taskModel, boardContainer, formContainer }) {
+  constructor({ taskModel, boardContainer }) {
     this.#tasksModel = taskModel;
     this.#boardContainer = boardContainer;
-    this.#formContainer = formContainer;
-    this.#taskAddFormComponent = new TaskAddFormComponent({
-      onClick: this.#handleAddTask.bind(this),
-    });
-    this.#trashClearComponent = new TrashBtnClear({
+    this.#resetClearComponent = new ResetClearComponent({
       onClick: this.#handleClearTrash.bind(this),
     });
     this.#tasksModel.addObserver(this.#handleModelChange.bind(this));
   }
 
-  init() {
-    this.#renderTaskForm();
-    this.#renderBoard();
+  async init() {
+    await this.#withLoading(async () => {
+      await this.#tasksModel.init();
+      this.#renderBoard();
+    });
   }
 
-  #renderTaskForm() {
-    render(this.#taskAddFormComponent, this.#formContainer);
+  async createTask() {
+    const taskTitle = document.querySelector('#add-task').value;
+    if (!taskTitle) {
+      return;
+    }
+    await this.#withLoading(async () => {
+      await this.#tasksModel.addTask(taskTitle);
+      document.querySelector('#add-task').value = '';
+      this.#renderBoard();
+    });
   }
 
-  #handleAddTask(title) {
-    if (title) { // Проверяем, что название не пустое
-      
-      this.#tasksModel.addTask(title);
+  async #handleTaskDrop(taskId, newStatus) {
+    await this.#withLoading(async () => {
+      await this.#tasksModel.updateTaskStatus(taskId, newStatus);
+      this.#renderBoard();
+    });
+  }
+
+  #handleClearTrash() {
+    this.#withLoading(async () => {
+      await this.#tasksModel.clearTrashTasks();
+      this.#renderBoard();
+    });
+  }
+
+  async #withLoading(action) {
+    this.#showLoading();
+    try {
+      await this.#sleep(1000); // Искусственная задержка для имитации длительной загрузки
+      await action(); // Основное действие
+    } catch (err) {
+      console.error('Ошибка при выполнении действия:', err);
+    } finally {
+      this.#hideLoading();
     }
   }
-  
+
+  #showLoading() {
+    if (!this.#loadingViewComponent) {
+      this.#loadingViewComponent = new LoadingViewComponent();
+      render(this.#loadingViewComponent, this.#boardContainer, RenderPosition.BEFOREBEGIN);
+    }
+  }
+
+  #hideLoading() {
+    if (this.#loadingViewComponent) {
+      this.#loadingViewComponent.element.remove();
+      this.#loadingViewComponent = null;
+    }
+  }
+
+  #sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   #renderBoard() {
     this.#clearBoard();
-    ConstElements.forEach((status) => {
+    statuses.forEach((status) => {
       this.#renderTasksList(status);
     });
   }
 
   #renderTasksList(status) {
-    const tasksListComponent = new TasksListComponent({ status, 
-      onTaskDrop: this.#handleTaskDrop.bind(this)
-     });
+    const tasksListComponent = new TasksListComponent({
+      status,
+      onTaskDrop: this.#handleTaskDrop.bind(this),
+    });
     render(tasksListComponent, this.#boardContainer);
 
     const tasksFiltered = this.#tasksModel.tasks.filter((task) => task.status === status.status);
-    
-    if (tasksFiltered.length === 0 || tasksFiltered.every(task => !task.title)) {
+
+    if (tasksFiltered.length === 0 || tasksFiltered.every((task) => !task.title)) {
       const stubComponent = new StubComponent(null);
       render(stubComponent, tasksListComponent.element);
     } else {
@@ -69,25 +112,23 @@ export default class TasksBoardPresenter {
       });
     }
 
-    if (status.status === 'trash' ) {
-      render(this.#trashClearComponent, tasksListComponent.element); 
+    if (status.status === 'trash') {
+      render(this.#resetClearComponent, tasksListComponent.element);
     }
-    
   }
 
-
-  #handleClearTrash() {
-    this.#tasksModel.clearTrash('trash');
-    this.#renderBoard();
-    this.#trashClearComponent.disabled();
-  }
-  
-  #handleTaskDrop(taskId, newStatus){
-    this.#tasksModel.updateTaskStatus(taskId, newStatus);
-  }
-
-  #handleModelChange() {
-    this.#renderBoard();
+  #handleModelChange(event, payload) {
+    switch (event) {
+      case UserAction.ADD_TASK:
+      case UserAction.UPDATE_TASK:
+      case UserAction.DELETE_TASK:
+        this.#clearBoard();
+        this.#renderBoard();
+        if (this.#resetClearComponent) {
+          this.#resetClearComponent.toggleDisabled(!this.#tasksModel.hasBasketTasks());
+        }
+        break;
+    }
   }
 
   #clearBoard() {

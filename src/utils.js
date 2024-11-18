@@ -1,4 +1,4 @@
 // utils.js
-export function generateUniqueId() {
+export function generateId() {
     return '_' + Math.random().toString(36).substr(2, 9);
 }
