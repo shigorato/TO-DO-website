@@ -112,7 +112,12 @@ export default class TasksBoardPresenter {
       });
     }
 
-    if (status.status === 'trash') {
+    if (status.status === 'trash' ) {
+      if ( tasksFiltered.length === 0) {
+        this.#resetClearComponent.toggleDisabled(!this.#tasksModel.hasBasketTasks());
+      }else{
+        this.#resetClearComponent.toggleActive(!this.#tasksModel.hasBasketTasks());
+      }
       render(this.#resetClearComponent, tasksListComponent.element);
     }
   }
@@ -124,9 +129,7 @@ export default class TasksBoardPresenter {
       case UserAction.DELETE_TASK:
         this.#clearBoard();
         this.#renderBoard();
-        if (this.#resetClearComponent) {
-          this.#resetClearComponent.toggleDisabled(!this.#tasksModel.hasBasketTasks());
-        }
+        
         break;
     }
   }

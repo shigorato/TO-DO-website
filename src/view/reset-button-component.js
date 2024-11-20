@@ -25,9 +25,16 @@ export default class cleartrashBtnComponent  extends AbstractComponent{
     this.#handleClick();
   }
 
-  toggleDisabled(isDisabled) {
-    this.element.disabled = isDisabled;
+  toggleDisabled() {
+      this.element.setAttribute('disabled', '');
+      this.element.style['opacity'] = '0.5';
+  } 
+  toggleActive() {
+    this.element.removeAttribute('disabled');
+    this.element.style['opacity'] = '1';
   }
+    
+  
 
 
   resetClearButton() {
