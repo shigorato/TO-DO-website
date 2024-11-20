@@ -10,10 +10,6 @@ import { statuses, UserAction, UpdateType } from '../const.js';
   constructor({tasksApiService}) {
     super();
     this.#tasksApiService = tasksApiService;
-
-    this.#tasksApiService.tasks.then(tasks=>{
-      console.log(tasks);
-    })
   }
 
   async init() {

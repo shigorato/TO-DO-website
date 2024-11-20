@@ -29,7 +29,6 @@ function handleNewTaskButtonClick(){
   tasksBoardPresenter.createTask();
 }
 
-// Рендеринг компонентов
 render(new HeaderComponent(), bodyContainer, RenderPosition.AFTERBEGIN);
 render(formAddTaskComponent, formContainer);
 

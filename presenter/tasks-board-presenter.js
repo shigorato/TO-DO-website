@@ -57,8 +57,8 @@ export default class TasksBoardPresenter {
   async #withLoading(action) {
     this.#showLoading();
     try {
-      await this.#sleep(1000); // Искусственная задержка для имитации длительной загрузки
-      await action(); // Основное действие
+      await this.#sleep(1000);
+      await action(); 
     } catch (err) {
       console.error('Ошибка при выполнении действия:', err);
     } finally {

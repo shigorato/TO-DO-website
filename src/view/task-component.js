@@ -13,7 +13,7 @@ function createTaskComponentTemplate({ status, title }) {
   );
 }
 
-export default class TaskComponent extends AbstractComponent { // Исправляем название класса
+export default class TaskComponent extends AbstractComponent { // 
   constructor({ task }) {
     super();
     this.task = task;
@@ -21,7 +21,7 @@ export default class TaskComponent extends AbstractComponent { // Исправл
   }
 
   get template() {
-    return createTaskComponentTemplate(this.task); // Передаем task в функцию шаблона
+    return createTaskComponentTemplate(this.task); 
   }
 
   #afterCreateElement(){
